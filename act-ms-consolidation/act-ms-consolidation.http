@@ -1,0 +1,6 @@
+@act_ms_consolidation_HostAddress = http://localhost:5094
+
+GET {{act_ms_consolidation_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35027.167
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "act-ms-transaction", "act-ms-transaction\act-ms-transaction.csproj", "{54CF1363-2315-4C74-87D9-F2D5E77D16A5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Itens de Solução", "Itens de Solução", "{20685682-DF54-47F2-908D-A033A99B9E5A}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yaml = docker-compose.yaml
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "postgres-config", "postgres-config", "{CE59BF2B-0C06-48A6-AE5D-64CD0B642F83}"
+	ProjectSection(SolutionItems) = preProject
+		pg_hba.conf = pg_hba.conf
+		postgresql.conf = postgresql.conf
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "act-ms-auth", "act-ms-auth\act-ms-auth.csproj", "{D245F61F-928A-4E1A-B740-84AAEA0D6CCB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "act-ms-consolidation", "act-ms-consolidation\act-ms-consolidation.csproj", "{9A73569E-C89F-42B9-94BA-F52E45E0F180}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{54CF1363-2315-4C74-87D9-F2D5E77D16A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54CF1363-2315-4C74-87D9-F2D5E77D16A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54CF1363-2315-4C74-87D9-F2D5E77D16A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54CF1363-2315-4C74-87D9-F2D5E77D16A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D245F61F-928A-4E1A-B740-84AAEA0D6CCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D245F61F-928A-4E1A-B740-84AAEA0D6CCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D245F61F-928A-4E1A-B740-84AAEA0D6CCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D245F61F-928A-4E1A-B740-84AAEA0D6CCB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A73569E-C89F-42B9-94BA-F52E45E0F180}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A73569E-C89F-42B9-94BA-F52E45E0F180}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A73569E-C89F-42B9-94BA-F52E45E0F180}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A73569E-C89F-42B9-94BA-F52E45E0F180}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CE59BF2B-0C06-48A6-AE5D-64CD0B642F83} = {20685682-DF54-47F2-908D-A033A99B9E5A}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EE2D0CF5-6DF5-4A94-8841-DB3ACCDF1EBD}
+	EndGlobalSection
+EndGlobal

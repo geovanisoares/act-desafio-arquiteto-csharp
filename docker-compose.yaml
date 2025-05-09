@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: act-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootP4ss
+      MYSQL_DATABASE: transaction_db
+      MYSQL_USER: act-user
+      MYSQL_PASSWORD: actUserP4ss
+    ports:
+      - "3300:3306"
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+  redis:
+    image: redis:latest
+    container_name: redis-cache
+    ports:
+      - "6379:6379"
+    restart: always

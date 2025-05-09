@@ -1,0 +1,6 @@
+@act_ms_transaction_HostAddress = http://localhost:5136
+
+GET {{act_ms_transaction_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,6 @@
+@act_ms_auth_HostAddress = http://localhost:5020
+
+GET {{act_ms_auth_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
