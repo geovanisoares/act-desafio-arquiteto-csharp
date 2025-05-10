@@ -61,5 +61,19 @@ namespace act_ms_transaction.Api.Controllers
 
             return Ok(transaction);
         }
+
+        [HttpDelete("{id:guid}")]
+        [SwaggerOperation(Summary = "Delete a transaction by ID")]
+        [SwaggerResponse(204, "Transaction deleted successfully")]
+        [SwaggerResponse(404, "Transaction not found")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var isDeleted = await _transactionService.DeleteAsync(id);
+
+            if (!isDeleted)
+                return NotFound($"Transaction with ID {id} not found.");
+
+            return NoContent();
+        }
     }
 }

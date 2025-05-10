@@ -11,15 +11,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Itens de Solução", "Itens
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "postgres-config", "postgres-config", "{CE59BF2B-0C06-48A6-AE5D-64CD0B642F83}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nginx-config", "nginx-config", "{CE59BF2B-0C06-48A6-AE5D-64CD0B642F83}"
 	ProjectSection(SolutionItems) = preProject
-		pg_hba.conf = pg_hba.conf
-		postgresql.conf = postgresql.conf
+		nginx.conf = nginx.conf
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "act-ms-auth", "act-ms-auth\act-ms-auth.csproj", "{D245F61F-928A-4E1A-B740-84AAEA0D6CCB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "act-ms-auth", "act-ms-auth\act-ms-auth.csproj", "{D245F61F-928A-4E1A-B740-84AAEA0D6CCB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "act-ms-consolidation", "act-ms-consolidation\act-ms-consolidation.csproj", "{9A73569E-C89F-42B9-94BA-F52E45E0F180}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "act-ms-consolidation", "act-ms-consolidation\act-ms-consolidation.csproj", "{9A73569E-C89F-42B9-94BA-F52E45E0F180}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -22,7 +22,7 @@ namespace act_ms_consolidation.Infrastructure.Repositories
         {
             var transactions = await _context.Transactions
                 .Where(t => t.Date == date)
-                .Select(t => new TransactionQueryModel
+                .Select(t => new ConsolidationQueryModel
                 {
                     Date = t.Date,
                     Type = t.Type,

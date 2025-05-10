@@ -2,6 +2,7 @@ using act_ms_transaction.Application.Interfaces;
 using act_ms_transaction.Application.Services;
 using act_ms_transaction.Domain.Interfaces;
 using act_ms_transaction.Infrastructure.Data;
+using act_ms_transaction.Infrastructure.Messaging;
 using act_ms_transaction.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -25,6 +26,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
+
+builder.Services.Configure<RabbitMQSettings>(builder.Configuration.GetSection("RabbitMQ"));
+builder.Services.AddSingleton<IMessageService, TransactionPublisher>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -62,11 +66,11 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+//if (app.Environment.IsDevelopment())
+//{
+app.UseSwagger();
+app.UseSwaggerUI();
+//}
 
 app.Use(async (context, next) =>
 {
@@ -97,6 +101,8 @@ app.Use(async (context, next) =>
 
     await next.Invoke();
 });
+
+app.MapGet("/health", () => Results.Ok("Healthy"));
 
 app.UseAuthorization();
 
