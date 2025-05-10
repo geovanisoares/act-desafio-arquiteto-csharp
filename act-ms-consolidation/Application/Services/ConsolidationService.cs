@@ -1,4 +1,5 @@
 ﻿using act_ms_consolidation.Api.DTOs;
+using act_ms_consolidation.Application.Exceptions;
 using act_ms_consolidation.Application.Interfaces;
 using act_ms_consolidation.Domain.Interfaces;
 
@@ -8,27 +9,43 @@ namespace act_ms_consolidation.Application.Services
     {
         private readonly IConsolidationRepository _consolidationRepository;
         private readonly IConsolidationCacheRepository _cacheRepository;
+        private readonly ILogger<ConsolidationService> _logger;
         private const string CachePrefix = "consolidation_";
 
-        public ConsolidationService(IConsolidationRepository consolidationRepository, IConsolidationCacheRepository cacheRepository)
+        public ConsolidationService(IConsolidationRepository consolidationRepository, IConsolidationCacheRepository cacheRepository, ILogger<ConsolidationService> logger)
         {
             _consolidationRepository = consolidationRepository;
             _cacheRepository = cacheRepository;
+            _logger = logger;
         }
 
         public async Task<ConsolidationResponse> GetDailyConsolidationAsync(string date)
         {
+            if (string.IsNullOrEmpty(date))
+            {
+                _logger.LogWarning("Date field is required");
+                throw new BusinessException("Date field is required");
+            }
             string cacheKey = $"{CachePrefix}{date}";
+            
+            _logger.LogInformation($"Checking cache for date: {date}");
+
             var cachedData = await _cacheRepository.GetAsync<ConsolidationResponse>(cacheKey);
 
             if (cachedData != null)
             {
-                Console.WriteLine($"Cache hit for {date}");
+                _logger.LogInformation($"Cache hit for {date}");
                 return cachedData;
             }
 
-            Console.WriteLine($"Cache miss for {date}");
+            _logger.LogInformation($"Cache miss for {date}. Retrieving data from repository.");
+
             var consolidation = await _consolidationRepository.GetDailyConsolidationAsync(date);
+
+            if (consolidation == null)
+            {
+                _logger.LogWarning("No data found for date: {Date}", date);
+            }
 
             var response = new ConsolidationResponse
             {
@@ -38,9 +55,12 @@ namespace act_ms_consolidation.Application.Services
                 Balance = consolidation.Balance
             };
 
+            _logger.LogInformation("Caching data for date: {Date} with key: {CacheKey}", date, cacheKey);
             await _cacheRepository.SetAsync(cacheKey, response, TimeSpan.FromMinutes(5));
 
             return response;
+            
+           
         }
     }
 }

@@ -8,7 +8,7 @@ namespace act_ms_transaction.Application.Interfaces
     public interface ITransactionService
     {
         Task<TransactionEntity> CreateAsync(TransactionEntity transaction);
-        Task<TransactionEntity> UpdateAsync(TransactionEntity transaction);
+        Task<TransactionEntity> UpdateAsync(TransactionEntity transaction, Guid id);
         Task<bool> DeleteAsync(Guid transactionId);
         Task<TransactionEntity?> GetByIdAsync(Guid transactionId);
         Task<PagedResult<GetTransactionResponse>> GetAllAsync(int pageNumber, int pageSize, string? orderBy, bool asc);

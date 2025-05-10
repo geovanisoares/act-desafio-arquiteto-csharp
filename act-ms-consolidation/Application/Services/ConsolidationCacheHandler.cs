@@ -8,25 +8,36 @@ namespace act_ms_consolidation.Application.Services
     public class ConsolidationCacheHandler : IConsolidationCacheHandler
     {
         private readonly IConsolidationCacheRepository _cacheRepository;
+        private readonly ILogger<ConsolidationCacheHandler> _logger;
         private const string CachePrefix = "consolidation_";
 
-        public ConsolidationCacheHandler(IConsolidationCacheRepository cacheRepository)
+        public ConsolidationCacheHandler(IConsolidationCacheRepository cacheRepository, ILogger<ConsolidationCacheHandler> logger)
         {
             _cacheRepository = cacheRepository;
+            _logger = logger;
         }
 
         public async Task HandleConsolidationCacheAsync(string date)
         {
             if (string.IsNullOrEmpty(date))
             {
-                Console.WriteLine("Invalid date received for cache invalidation.");
+                _logger.LogWarning("Received invalid date for cache invalidation.");
                 return;
             }
 
             string cacheKey = $"{CachePrefix}{date}";
 
-            Console.WriteLine($"Invalidating cache for key: {cacheKey}");
-            await _cacheRepository.RemoveAsync(cacheKey);
+            _logger.LogInformation($"Invalidating cache for key: {cacheKey}");
+
+            try
+            {
+                await _cacheRepository.RemoveAsync(cacheKey);
+                _logger.LogInformation($"Cache successfully invalidated for key: {cacheKey}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error while invalidating cache for key: {cacheKey}");
+            }
         }
     }
 }

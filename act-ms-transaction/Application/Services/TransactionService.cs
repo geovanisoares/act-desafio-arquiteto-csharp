@@ -1,5 +1,6 @@
 ﻿using act_ms_transaction.Api.DTOs.Responses;
 using act_ms_transaction.Application.DTOs;
+using act_ms_transaction.Application.Exeptions;
 using act_ms_transaction.Application.Interfaces;
 using act_ms_transaction.Application.Mappers;
 using act_ms_transaction.Domain.Entities;
@@ -35,34 +36,48 @@ namespace act_ms_transaction.Application.Services
             return createdTransaction;
         }
 
-        public async Task<TransactionEntity> UpdateAsync(TransactionEntity transaction)
+        public async Task<TransactionEntity> UpdateAsync(TransactionEntity transaction, Guid transactionId)
         {
+            if (transactionId == Guid.Empty)
+            {
+                _logger.LogWarning("Id field not found");
+                throw new BusinessException("id field is required.");
+            }
+
+            var transactionToUpdate = await _transactionRepository.GetByIdAsync(transactionId);
+
+            if (transactionToUpdate == null)
+            {
+                _logger.LogWarning($"Transaction with ID {transactionId} not found");
+                throw new NotFoundException($"Transaction with ID {transactionId} not found");
+            }
+
+            transaction.Id = transactionId;
             transaction.UpdatedAt = DateTime.UtcNow;
 
-            _logger.LogInformation("Updating transaction: {@Transaction}", transaction);
+            _logger.LogInformation($"Updating transaction: {transactionId}");
 
             var updatedTransaction = await _transactionRepository.UpdateAsync(transaction);
 
             await _messageService.PublishAsync(updatedTransaction.Date.ToString("yyyy-MM-dd"));
 
-            _logger.LogInformation("Transaction updated: {@Transaction}", updatedTransaction);
+            _logger.LogInformation($"Transaction updated: {transactionId}");
 
             return updatedTransaction;
         }
 
         public async Task<bool> DeleteAsync(Guid transactionId)
         {
-            _logger.LogInformation("Attempting to delete transaction with ID {TransactionId}", transactionId);
+            _logger.LogInformation($"Attempting to delete transaction with ID {transactionId}");
 
             var transaction = await _transactionRepository.GetByIdAsync(transactionId);
 
             if (transaction == null)
             {
-                _logger.LogWarning("Transaction with ID {TransactionId} not found", transactionId);
-                return false;
+                _logger.LogWarning($"Transaction with ID {transactionId} not found");
+                throw new NotFoundException($"Transaction with ID {transactionId} not found");
             }
 
-            // Deleta a transação
             var isDeleted = await _transactionRepository.DeleteAsync(transactionId);
 
             if (isDeleted)
@@ -76,13 +91,23 @@ namespace act_ms_transaction.Application.Services
 
         public async Task<TransactionEntity?> GetByIdAsync(Guid transactionId)
         {
-            _logger.LogInformation("Fetching transaction with ID {TransactionId}", transactionId);
+            if (transactionId == Guid.Empty)
+            {
+                _logger.LogWarning("Id field not found");
+                throw new BusinessException("id field is required.");
+            }
+
+            _logger.LogInformation($"Fetching transaction with ID {transactionId}");
+
             var transaction = await _transactionRepository.GetByIdAsync(transactionId);
 
             if (transaction == null)
             {
-                _logger.LogWarning("Transaction with ID {TransactionId} not found", transactionId);
+                _logger.LogWarning($"Transaction with ID {transactionId} not found");
+                throw new NotFoundException($"Transaction with ID {transactionId} not found");
             }
+
+            _logger.LogInformation($"Transaction with ID {transactionId} fetched");
 
             return transaction;
         }

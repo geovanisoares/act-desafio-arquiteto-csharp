@@ -37,8 +37,8 @@ namespace act_ms_transaction.Api.Controllers
         public async Task<IActionResult> Update(Guid id, UpdateTransactionRequest transactionRequest)
         {
             var transactionEntity = TransactionMapper.MapToDomain(transactionRequest);
-            transactionEntity.Id = id;  // Assegura que o ID não seja alterado
-            var updatedTransaction = await _transactionService.UpdateAsync(transactionEntity);
+            
+            var updatedTransaction = await _transactionService.UpdateAsync(transactionEntity, id);
 
             return Ok(updatedTransaction);
         }
