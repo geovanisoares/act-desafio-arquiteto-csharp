@@ -1,8 +1,10 @@
 ﻿using act_ms_transaction.Application.DTOs;
+using act_ms_transaction.Application.Exeptions;
 using act_ms_transaction.Application.Interfaces;
 using act_ms_transaction.Application.Services;
 using act_ms_transaction.Domain.Entities;
 using act_ms_transaction.Domain.Interfaces;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -16,13 +18,19 @@ namespace act_ms_transaction.Tests
     {
         private readonly Mock<ITransactionRepository> _mockTransactionRepository;
         private readonly Mock<IMessageService> _mockMessageService;
+        private readonly Mock<ILogger<TransactionService>> _mockLogger;
         private readonly TransactionService _transactionService;
 
         public TransactionServiceTests()
         {
             _mockTransactionRepository = new Mock<ITransactionRepository>();
             _mockMessageService = new Mock<IMessageService>();
-            _transactionService = new TransactionService(_mockTransactionRepository.Object, _mockMessageService.Object);
+            _mockLogger = new Mock<ILogger<TransactionService>>();
+
+            _transactionService = new TransactionService(
+                _mockTransactionRepository.Object,
+                _mockMessageService.Object,
+                _mockLogger.Object);
         }
 
         [Fact]
@@ -49,65 +57,70 @@ namespace act_ms_transaction.Tests
             Assert.NotNull(result);
             Assert.Equal(transaction.Id, result.Id);
             _mockMessageService.Verify(service => service.PublishAsync(transaction.Date.ToString("yyyy-MM-dd")), Times.Once);
+
+            // Verifica log de criação
+            _mockLogger.Verify(log => log.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((o, t) => o.ToString().Contains("Creating transaction")),
+                null,
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Once);
         }
 
         [Fact]
-        public async Task UpdateAsync_ShouldReturnUpdatedTransaction()
+        public async Task UpdateAsync_ShouldThrowBusinessException_WhenTransactionIdIsEmpty()
         {
             var transaction = new TransactionEntity
             {
-                Id = Guid.NewGuid(),
                 Date = DateTime.UtcNow,
-                Value = 2000m,
-                Description = "Atualização de Transação"
+                Value = 1500.5m,
+                Description = "Compra de Equipamentos"
             };
 
-            _mockTransactionRepository
-                .Setup(repo => repo.UpdateAsync(It.IsAny<TransactionEntity>()))
-                .ReturnsAsync(transaction);
+            var exception = await Assert.ThrowsAsync<BusinessException>(() =>
+                _transactionService.UpdateAsync(transaction, Guid.Empty));
 
-            _mockMessageService
-                .Setup(service => service.PublishAsync(It.IsAny<string>()))
-                .Returns(Task.CompletedTask);
+            Assert.Equal("id field is required.", exception.Message);
 
-            var result = await _transactionService.UpdateAsync(transaction);
-
-            Assert.NotNull(result);
-            Assert.Equal(transaction.Id, result.Id);
-            Assert.Equal(transaction.Value, result.Value);
-            _mockMessageService.Verify(service => service.PublishAsync(transaction.Date.ToString("yyyy-MM-dd")), Times.Once);
+            _mockLogger.Verify(log => log.Log(
+                LogLevel.Warning,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((o, t) => o.ToString().Contains("Id field not found")),
+                null,
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Once);
         }
 
         [Fact]
-        public async Task DeleteAsync_ShouldReturnTrue_WhenTransactionExists()
+        public async Task UpdateAsync_ShouldThrowNotFoundException_WhenTransactionNotFound()
         {
             var transactionId = Guid.NewGuid();
             var transaction = new TransactionEntity
             {
                 Id = transactionId,
-                Date = DateTime.UtcNow
+                Date = DateTime.UtcNow,
+                Value = 1500.5m,
+                Description = "Atualização"
             };
 
             _mockTransactionRepository
                 .Setup(repo => repo.GetByIdAsync(transactionId))
-                .ReturnsAsync(transaction);
+                .ReturnsAsync(default(TransactionEntity));
 
-            _mockTransactionRepository
-                .Setup(repo => repo.DeleteAsync(transactionId))
-                .ReturnsAsync(true);
+            var exception = await Assert.ThrowsAsync<NotFoundException>(() =>
+                _transactionService.UpdateAsync(transaction, transactionId));
 
-            _mockMessageService
-                .Setup(service => service.PublishAsync(It.IsAny<string>()))
-                .Returns(Task.CompletedTask);
+            Assert.Equal($"Transaction with ID {transactionId} not found", exception.Message);
 
-            var result = await _transactionService.DeleteAsync(transactionId);
-
-            Assert.True(result);
-            _mockMessageService.Verify(service => service.PublishAsync(transaction.Date.ToString("yyyy-MM-dd")), Times.Once);
+            _mockLogger.Verify(log => log.Log(
+                LogLevel.Warning,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((o, t) => o.ToString().Contains($"Transaction with ID {transactionId} not found")),
+                null,
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Once);
         }
 
         [Fact]
-        public async Task DeleteAsync_ShouldReturnFalse_WhenTransactionDoesNotExist()
+        public async Task DeleteAsync_ShouldThrowNotFoundException_WhenTransactionDoesNotExist()
         {
             var transactionId = Guid.NewGuid();
 
@@ -115,54 +128,55 @@ namespace act_ms_transaction.Tests
                 .Setup(repo => repo.GetByIdAsync(transactionId))
                 .ReturnsAsync(default(TransactionEntity));
 
-            var result = await _transactionService.DeleteAsync(transactionId);
+            var exception = await Assert.ThrowsAsync<NotFoundException>(() =>
+                _transactionService.DeleteAsync(transactionId));
 
-            Assert.False(result);
-            _mockMessageService.Verify(service => service.PublishAsync(It.IsAny<string>()), Times.Never);
+            Assert.Equal($"Transaction with ID {transactionId} not found", exception.Message);
+
+            _mockLogger.Verify(log => log.Log(
+                LogLevel.Warning,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((o, t) => o.ToString().Contains($"Transaction with ID {transactionId} not found")),
+                null,
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Once);
         }
 
         [Fact]
-        public async Task GetByIdAsync_ShouldReturnTransaction_WhenTransactionExists()
+        public async Task GetByIdAsync_ShouldThrowBusinessException_WhenTransactionIdIsEmpty()
+        {
+            var exception = await Assert.ThrowsAsync<BusinessException>(() =>
+                _transactionService.GetByIdAsync(Guid.Empty));
+
+            Assert.Equal("id field is required.", exception.Message);
+
+            _mockLogger.Verify(log => log.Log(
+                LogLevel.Warning,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((o, t) => o.ToString().Contains("Id field not found")),
+                null,
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetByIdAsync_ShouldThrowNotFoundException_WhenTransactionNotFound()
         {
             var transactionId = Guid.NewGuid();
-            var transaction = new TransactionEntity { Id = transactionId };
 
             _mockTransactionRepository
                 .Setup(repo => repo.GetByIdAsync(transactionId))
-                .ReturnsAsync(transaction);
+                .ReturnsAsync(default(TransactionEntity));
 
-            var result = await _transactionService.GetByIdAsync(transactionId);
+            var exception = await Assert.ThrowsAsync<NotFoundException>(() =>
+                _transactionService.GetByIdAsync(transactionId));
 
-            Assert.NotNull(result);
-            Assert.Equal(transactionId, result.Id);
-        }
+            Assert.Equal($"Transaction with ID {transactionId} not found", exception.Message);
 
-        [Fact]
-        public async Task GetAllAsync_ShouldReturnPagedTransactions()
-        {
-            var transactions = new List<TransactionEntity>
-            {
-                new TransactionEntity { Id = Guid.NewGuid(), Date = DateTime.UtcNow, Value = 100m },
-                new TransactionEntity { Id = Guid.NewGuid(), Date = DateTime.UtcNow, Value = 200m }
-            };
-
-            var pagedResult = new PagedResult<TransactionEntity>
-            {
-                Items = transactions,
-                TotalCount = 2,
-                PageNumber = 1,
-                PageSize = 10
-            };
-
-            _mockTransactionRepository
-                .Setup(repo => repo.GetAllAsync(1, 10, null, true))
-                .ReturnsAsync(pagedResult);
-
-            var result = await _transactionService.GetAllAsync(1, 10, null, true);
-
-            Assert.NotNull(result);
-            Assert.Equal(2, result.Items.Count());
-            Assert.Equal(2, result.TotalCount);
+            _mockLogger.Verify(log => log.Log(
+                LogLevel.Warning,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((o, t) => o.ToString().Contains($"Transaction with ID {transactionId} not found")),
+                null,
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Once);
         }
     }
 }

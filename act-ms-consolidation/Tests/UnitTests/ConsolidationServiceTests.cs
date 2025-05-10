@@ -1,9 +1,13 @@
 ﻿using act_ms_consolidation.Api.DTOs;
+using act_ms_consolidation.Application.Exceptions;
 using act_ms_consolidation.Application.Services;
 using act_ms_consolidation.Domain.Entities;
 using act_ms_consolidation.Domain.Interfaces;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
+using System;
+using System.Threading.Tasks;
 
 namespace act_ms_consolidation.Tests.Application.Services
 {
@@ -11,13 +15,19 @@ namespace act_ms_consolidation.Tests.Application.Services
     {
         private readonly Mock<IConsolidationRepository> _mockRepository;
         private readonly Mock<IConsolidationCacheRepository> _mockCacheRepository;
+        private readonly Mock<ILogger<ConsolidationService>> _mockLogger;
         private readonly ConsolidationService _service;
 
         public ConsolidationServiceTests()
         {
             _mockRepository = new Mock<IConsolidationRepository>();
             _mockCacheRepository = new Mock<IConsolidationCacheRepository>();
-            _service = new ConsolidationService(_mockRepository.Object, _mockCacheRepository.Object);
+            _mockLogger = new Mock<ILogger<ConsolidationService>>();
+
+            _service = new ConsolidationService(
+                _mockRepository.Object,
+                _mockCacheRepository.Object,
+                _mockLogger.Object);
         }
 
         [Fact]
@@ -26,6 +36,7 @@ namespace act_ms_consolidation.Tests.Application.Services
             // Arrange
             string date = "2025-05-07";
             string cacheKey = $"consolidation_{date}";
+
             var expectedResponse = new ConsolidationResponse
             {
                 Date = date,
@@ -50,6 +61,13 @@ namespace act_ms_consolidation.Tests.Application.Services
 
             _mockCacheRepository.Verify(repo => repo.GetAsync<ConsolidationResponse>(cacheKey), Times.Once);
             _mockRepository.Verify(repo => repo.GetDailyConsolidationAsync(It.IsAny<string>()), Times.Never);
+
+            _mockLogger.Verify(log => log.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((o, t) => o.ToString().Contains($"Cache hit for {date}")),
+                null,
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Once);
         }
 
         [Fact]
@@ -100,6 +118,32 @@ namespace act_ms_consolidation.Tests.Application.Services
             _mockCacheRepository.Verify(repo => repo.GetAsync<ConsolidationResponse>(cacheKey), Times.Once);
             _mockRepository.Verify(repo => repo.GetDailyConsolidationAsync(date), Times.Once);
             _mockCacheRepository.Verify(repo => repo.SetAsync(cacheKey, It.IsAny<ConsolidationResponse>(), It.IsAny<TimeSpan>()), Times.Once);
+
+            _mockLogger.Verify(log => log.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((o, t) => o.ToString().Contains($"Cache miss for {date}")),
+                null,
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetDailyConsolidationAsync_ShouldThrowBusinessException_WhenDateIsEmpty()
+        {
+            // Arrange
+            string date = "";
+
+            // Act e Assert
+            var exception = await Assert.ThrowsAsync<BusinessException>(() => _service.GetDailyConsolidationAsync(date));
+
+            Assert.Equal("Date field is required", exception.Message);
+
+            _mockLogger.Verify(log => log.Log(
+                LogLevel.Warning,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((o, t) => o.ToString().Contains("Date field is required")),
+                null,
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Once);
         }
     }
 }
