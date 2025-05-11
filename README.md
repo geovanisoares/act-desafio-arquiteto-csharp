@@ -200,7 +200,27 @@
   - Na raiz da solução, execute: `dotnet test`
 - Performance:
   - Na pasta Tests/PerformanceTests do ms consolidation, execute: `k6 run ConsolidationPerformanceTest.js`.
-
+# Validação dos requisitos funcionais e não funcionais:
+## RF:
+- RF1: Registrar lançamentos (créditos e débitos) no fluxo de caixa.
+- RF2: Atualizar lançamentos existentes.
+- RF3: Excluir lançamentos.
+- RF4: Consultar lançamentos.
+- RF5: Gerar relatório diário consolidado do fluxo de caixa.
+- RF6: Sincronização entre os serviços de controle de lançamentos e consolidação diária.
+## RNF:
+- RNF1: O serviço de consolidado diário recebe 50 requisições por segundo, com no máximo 5% de perda de requisições.
+- RNF2: O serviço de controle de lançamento não deve ficar indisponível se o sistema de consolidado diário cair.
+- RNF3: Implementar estratégias de recuperação de falhas.
+- RNF4: Implementação de autenticação, autorização e criptografia.
+- RNF5: Garantir alta disponibilidade e escalabilidade para ambos os serviços.
+- RNF6: Criar documentação completa das decisões arquiteturais.
+- RNF7: Otimização de desempenho, disponibilidade e confiabilidade.
+- RNF8: Implementação de testes unitários.
+- RNF9: Implementação de monitoramento e observabilidade.
+- RNF10: Definição e estruturação dos domínios funcionais.
+- RNF11: Criação de um Readme com instruções para execução local.
+- RNF12: Deve ser feito usando C#
 # Temp:
 - summaries para melhor documenta��o do c�digo.
 
