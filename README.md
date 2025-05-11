@@ -82,6 +82,9 @@
 # Detalhamento dos serviços, estruturas e componentes.
 ## MS Auth
 - Design de código: Em camadas.
+
+# Instruções para rodar a aplicação e testes.
+
 - summaries para melhor documenta��o do c�digo.
 
 - Incluir autorizações não apenas autenticações.
