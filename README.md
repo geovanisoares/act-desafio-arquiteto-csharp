@@ -158,9 +158,8 @@
     - LogWarning() - Exceções de validação e transação não encontrada.
     - LogError() - Erros críticos durante operações.
 - Segurança.
-  - Rotas protegidas
-## MS Auth
-- Endpoints
+  - Todas as rotas são protegidas por JWT. (Por conta do tempo do desafio a proteção de rotas foi aplicada apenas em transaction)
+  - Autenticação realizada pelo MS Auth.
 
 # Instruções para rodar a aplicação e testes.
 
