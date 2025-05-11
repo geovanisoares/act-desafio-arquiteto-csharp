@@ -81,7 +81,7 @@
 
 # Detalhamento dos serviços, estruturas e componentes.
 ## MS Auth
-- Code First
+- Design de código: Em camadas.
 - summaries para melhor documenta��o do c�digo.
 
 - Incluir autorizações não apenas autenticações.
