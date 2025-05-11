@@ -164,6 +164,8 @@
 ## Detalhamento dos MS's.
 ### MS Auth.
 ### MS Transaction.
+- Funcionalidades:
+  - 
 ### MS Consolidation.
 
 # Instruções para rodar a aplicação e testes.
@@ -203,9 +205,42 @@
 - Performance:
   - Na pasta Tests/PerformanceTests do ms consolidation, execute: `k6 run ConsolidationPerformanceTest.js`.
 # Validação dos requisitos funcionais e não funcionais:
+## Pré-requisitos:
+- Docker funcional com todos os containers em pleno funcionamento.
+- Migrations do ms transactions aplicadas.
+- Pegar o token de acesso:
+  - Acesse o ms auth para pegar token JWT: `http://localhost/auth/swagger/index.html`
+  - No swagger, acesse a rota POST Auth/login > Try it out.
+  - Envie o payload de acesso (Já está configurado o email e senha que está hardcode para gerar o token)
+`{
+  "username": "admin",
+  "password": "123456"
+}`
+  - Exemplo de resposta:
+`{
+"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJzdWIiOiJhZG1pbiIsImp0aSI6IjQ0ZDQ3NTRjLTE2N2ItNDAzOC05NzM3LTFmMzE1OTY0ZjE2YSIsImV4cCI6MTc0NzAwNTY1NSwiaXNzIjoiQXV0aFNlcnZpY2UiLCJhdWQiOiJBdXRoU2VydmljZUNsaWVudCJ9.E4FuYjFG7Te9kyUVWNU0sMT1_3wMnk2olfkAkPrusPU"
+}`
+- Adicionar o token ao swagger:
+  - Acesse o swagger do ms transaction: `http://localhost/transaction/swagger/index.html`
+  - No canto superior direito clique em "Authorize".
+  - De posse do token, inclua o mesmo no campo de input com o prefixo "Bearer ", exemplo: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJzdWIiOiJhZG1pbiIsImp0aSI6IjQ0ZDQ3NTRjLTE2N2ItNDAzOC05NzM3LTFmMzE1OTY0ZjE2YSIsImV4cCI6MTc0NzAwNTY1NSwiaXNzIjoiQXV0aFNlcnZpY2UiLCJhdWQiOiJBdXRoU2VydmljZUNsaWVudCJ9.E4FuYjFG7Te9kyUVWNU0sMT1_3wMnk2olfkAkPrusPU`
+  - Clique em "Authorize" e depois em "Close".
+  - Agora pode fazer uso das rotas bloqueadas normalmente.
 ## RF:
 - RF1: Registrar lançamentos (créditos e débitos) no fluxo de caixa.
+  - Acessar swagger: `http://localhost/transaction/swagger/index.html`
+  - Acesse a rota POST /Transaction > Try it out
+  - Já tem modelo de payload setado, tente gravar datas diferentes, preferencialmente entre 2025-05-03 e 2025-05-07 (teste de performance busca datas nesse range).
+  - Clique em "Execute" para executar a requisição.
+  - Evidencie a transcação gerada no payload de retorno ou:
+  - Vá na rota GET /Transaction > Try it out
+  - Clique em "Execute" para executar a requisição.
+  - Evidencie as transações geradas no payload de retorno.
 - RF2: Atualizar lançamentos existentes.
+  - Acessar swagger: `http://localhost/transaction/swagger/index.html`
+  - Acesse a rota PUT /Transaction > Try it out.
+  - De posse do Id de uma notificação existente, insira o mesmo no campo "id" do path params.
+  - 
 - RF3: Excluir lançamentos.
 - RF4: Consultar lançamentos.
 - RF5: Gerar relatório diário consolidado do fluxo de caixa.
@@ -224,39 +259,13 @@
 - RNF11: Criação de um Readme com instruções para execução local.
 - RNF12: Deve ser feito usando C#
 # Temp:
-- summaries para melhor documenta��o do c�digo.
-
-- Incluir autorizações não apenas autenticações.
-- ms-auth
-	- Ajustar o design de código, criar rota de registro de usuários retirando mock.
-- Verificar se as portas que os containers vão rodar nãoe estão ocupadas pela máquina que está executando.
-- Caso terna
-
 TODO:
-- Incluir RabbitMQ e Redis no compose. OK
-- Integrar rabbitmq na rota de criação e alteração e deleção. OK
-- Implementar health check. OK
-- Implementar middleware de erros. PENDENTE
-- Implementar o serviço de consolidation integrando com redis e consulta ao banco como fallback. OK
-- Implementar logs estruturados.PENDENTE
-- Implementar testes unitários.OK
-- Implementar testes com K6. OK
-- Implementar containerização nos ms com dois para cada consolidation e transaction com nginx balanceando.OK
-- Incluir Migrations no compose.
-- Adicionar validators nos dtos ou classe de dominio
+- Rota PUT está gerando erro 500. Colocar exemplo fixo no swagger
 - Adicionais
 	- Implementar prometheus e grafana gerando gráfico.
 	- Integrar frontend.
+- Fazer code review ponta a ponta.
 
-TODO Filtrado:
-- Colocar tratamento dos dados de entrada nos ms.
-- MIddleware de exceptions. OK
-- Colocar exemplo no swagger para ms auth. com user admin e pass 123456. OK
-- Aplicar os logs estruturados (Prioridade.) OK 
-- Migrations, ver forma de fazer no compose. NÃO FOI POSSIVEL.
-- Traçar tópicos de apresentação em vídeo se basear no documento.
-- Verificar todos os arquivos (Anotações desnecessárias, refs desnecessárias.)
-
-Planos futuros
+Planos futuros.
 - Configurar uma deadQueue para mensagens mal formatadas e reprocessamento posterior.
 - Caso tenha mais tipos de usuários, implementar autorização.
