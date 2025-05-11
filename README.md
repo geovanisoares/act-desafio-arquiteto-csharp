@@ -161,13 +161,6 @@
   - Todas as rotas são protegidas por JWT. (Por conta do tempo do desafio a proteção de rotas foi aplicada apenas em transaction)
   - Autenticação realizada pelo MS Auth.
 
-## Detalhamento dos MS's.
-### MS Auth.
-### MS Transaction.
-- Funcionalidades:
-  - 
-### MS Consolidation.
-
 # Instruções para rodar a aplicação e testes.
 ## Pré-requisitos
 - Docker e Docker Compose instalados.
@@ -211,12 +204,12 @@
 - Pegar o token de acesso:
   - Acesse o ms auth para pegar token JWT: `http://localhost/auth/swagger/index.html`
   - No swagger, acesse a rota POST Auth/login > Try it out.
-  - Envie o payload de acesso (Já está configurado o email e senha que está hardcode para gerar o token)
+  - Envie o payload de acesso (Já está configurado o email e senha que está hardcode para gerar o token)  
 `{
   "username": "admin",
   "password": "123456"
 }`
-  - Exemplo de resposta:
+  - Exemplo de resposta:  
 `{
 "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJzdWIiOiJhZG1pbiIsImp0aSI6IjQ0ZDQ3NTRjLTE2N2ItNDAzOC05NzM3LTFmMzE1OTY0ZjE2YSIsImV4cCI6MTc0NzAwNTY1NSwiaXNzIjoiQXV0aFNlcnZpY2UiLCJhdWQiOiJBdXRoU2VydmljZUNsaWVudCJ9.E4FuYjFG7Te9kyUVWNU0sMT1_3wMnk2olfkAkPrusPU"
 }`
@@ -240,13 +233,38 @@
   - Acessar swagger: `http://localhost/transaction/swagger/index.html`
   - Acesse a rota PUT /Transaction > Try it out.
   - De posse do Id de uma notificação existente, insira o mesmo no campo "id" do path params.
-  - 
+  - Modifique os campos disponíveis no payload exemplo.
+  - Clique em "Execute" para executar a requisição.
+  - Evidencie as transações geradas no payload de retorno ou faça uma requisição na rota GET /Transaction/{id}
 - RF3: Excluir lançamentos.
+  - Acessar swagger: `http://localhost/transaction/swagger/index.html`
+  - Acesse a rota DELETE /Transaction > Try it out.
+  - De posse do Id de uma notificação existente, insira o mesmo no campo "id" do path params.
+  - Clique em "Execute" para executar a requisição.
+  - Pode evidenciar a exclusão na rota GET /Transaction/{id} o resultado deve ser um 404 Not Found.
 - RF4: Consultar lançamentos.
+  - Acessar swagger: `http://localhost/transaction/swagger/index.html`
+  - Acesse a rota GET /Transaction ou Transaction/{id} > Try it out.
+  - Caso rota /Transaction pode ser configurado os inputs de paginação e ordenação.
+  - Clique em "Execute" para executar a requisição.
+  - Evidencie as transações no payload de retorno.
 - RF5: Gerar relatório diário consolidado do fluxo de caixa.
+  - Acessar swagger: `http://localhost/consolidation/swagger/index.html`
+  - Acesse a rota GET /Consolidation/{date} > Try it out.
+  - Insira alguma data no formato "yyyy-mm-dd" no campo "date" do path params, exemplo: `2025-05-07`.
+  - Clique em "Execute" para executar a requisição.
+  - Evidencie o resultado consolidado no payload de retorno.
 - RF6: Sincronização entre os serviços de controle de lançamentos e consolidação diária.
+  - Realize uma operação de transação, por exemplo, uma inclusão de nova transação no ms de transaction com uma data específica.
+  - Realize uma busca de consolidado no ms de consolidation com a mesa data das inclusões.
+  - Evidencie a mudança nos valores conforme a inclusão de novas transações.
 ## RNF:
 - RNF1: O serviço de consolidado diário recebe 50 requisições por segundo, com no máximo 5% de perda de requisições.
+  - Com K6 instalado na máquina.
+  - Acesse a pasta de tests/performanceTests do ms de consolidation.
+  - Rode o seguinte comando para executar o teste de performance com K6: `k6 run ConsolidationPerformanceTest.js`.
+  - Os testes irão rodar e ao final dá um resumo com os resultados, o último teste obteve o seguinte resultado:
+  - ![image](https://github.com/user-attachments/assets/dff13b3a-4f89-4d9b-bef6-556b79847717)
 - RNF2: O serviço de controle de lançamento não deve ficar indisponível se o sistema de consolidado diário cair.
 - RNF3: Implementar estratégias de recuperação de falhas.
 - RNF4: Implementação de autenticação, autorização e criptografia.
@@ -261,6 +279,7 @@
 # Temp:
 TODO:
 - Rota PUT está gerando erro 500. Colocar exemplo fixo no swagger
+- Rota GET/id e DELETE estão Dando erro 500 acho que quando não acha o ID.
 - Adicionais
 	- Implementar prometheus e grafana gerando gráfico.
 	- Integrar frontend.
