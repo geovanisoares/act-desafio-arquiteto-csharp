@@ -161,8 +161,47 @@
   - Todas as rotas são protegidas por JWT. (Por conta do tempo do desafio a proteção de rotas foi aplicada apenas em transaction)
   - Autenticação realizada pelo MS Auth.
 
-# Instruções para rodar a aplicação e testes.
+## Detalhamento dos MS's.
+### MS Auth.
+### MS Transaction.
+### MS Consolidation.
 
+# Instruções para rodar a aplicação e testes.
+## Pré-requisitos
+- Docker e Docker Compose instalados.
+  - Portas livres:
+    - 80 (Nginx)
+    - 3300 (MySQL)
+    - 6379 (Redis)
+    - 5672 (RabbitMQ)
+    - 15672 (RabbitMQ Management)
+- .NET SDK 8.0 instalado. 
+- EF CLI (Entity Framework Core CLI): Instalar globalmente: `dotnet tool install --global dotnet-ef` (Para rodar migrations e testes unitários)
+- K6 para testes de performance (Atualmente apenas em consolidation)
+  - (Windows) Baixar e instalar: [https://k6.io/open-source](https://k6.io/open-source/)/
+  - (Windows) Via Choco: `choco install k6`
+  - (MacOS) Via brew: `brew install k6`
+  - (Linux) Via apt: `sudo apt install k6`
+- Estrutura do Projeto
+  - docker-compose.yml - Definição dos serviços.
+  - act-ms-transaction - Microsserviço de transações.
+  - act-ms-consolidation - Microsserviço de consolidação.
+  - act-ms-auth - Microsserviço de autenticação.
+  - nginx.conf - Configuração do balanceamento de carga.
+## Rodar a aplicação
+- Passo 1: Construir as Imagens
+  - No diretório raiz do projeto, execute: `docker-compose build`
+- Passo 2: Subir os Containers
+  - `docker-compose up -d`
+- Passo 3: Aplicação das Migrations
+  - No diretorio raiz do projeto act-ms-transaction, execute: `dotnet ef database update`
+## Executar os testes
+- Unitários:
+  - Na raiz da solução, execute: `dotnet test`
+- Performance:
+  - Na pasta Tests/PerformanceTests do ms consolidation, execute: `k6 run ConsolidationPerformanceTest.js`.
+
+# Temp:
 - summaries para melhor documenta��o do c�digo.
 
 - Incluir autorizações não apenas autenticações.
