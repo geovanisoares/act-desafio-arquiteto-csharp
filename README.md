@@ -265,17 +265,32 @@
   - Rode o seguinte comando para executar o teste de performance com K6: `k6 run ConsolidationPerformanceTest.js`.
   - Os testes irão rodar e ao final dá um resumo com os resultados, o último teste obteve o seguinte resultado:
   - ![image](https://github.com/user-attachments/assets/dff13b3a-4f89-4d9b-bef6-556b79847717)
+  - Com a seguinte configuração para atender o requisito:
+  - ![configuration](https://github.com/user-attachments/assets/1a81aa08-5db4-42a6-baca-9f0ace568828)
 - RNF2: O serviço de controle de lançamento não deve ficar indisponível se o sistema de consolidado diário cair.
+  - No docker, pare os dois containers "act-ms-consolidation-1" e "act-ms-consolidation-2".
+  - Realize requisições através dos endpoints do ms transaction.
+  - Evidencie que as requisições funcionam normalmente mesmo com os containers de consolidation pausados.
 - RNF3: Implementar estratégias de recuperação de falhas.
+  - Por conta do tempo do desafio, estratégias de Retry e Circuit Breaker não foram implementados.
 - RNF4: Implementação de autenticação, autorização e criptografia.
+  - Para este desafio, foi implementado serviço de auth,  que gera token JWT para uso em rotas protegidas.
+  - Envidencie acessando rotas protegidas e recebendo unauthorize, após, desbloqueando as rotas com JWT gerado no ms auth.
+  - Por conta do tempo, apenas o ms transaction possui rotas protegidas.
 - RNF5: Garantir alta disponibilidade e escalabilidade para ambos os serviços.
-- RNF6: Criar documentação completa das decisões arquiteturais.
-- RNF7: Otimização de desempenho, disponibilidade e confiabilidade.
-- RNF8: Implementação de testes unitários.
-- RNF9: Implementação de monitoramento e observabilidade.
-- RNF10: Definição e estruturação dos domínios funcionais.
-- RNF11: Criação de um Readme com instruções para execução local.
-- RNF12: Deve ser feito usando C#
+  -O balanceamento de carga com nginx pode ser evidenciado parando um dos containers, por exemplo, um do consolidation, enviando novas requisições, pode alterar dando start no que estava pausado e pausando o que estava funcional refazendo os testes.
+  - Evidencie que o sistema distribui as cargas não impedindo sua funcionalidade, gerando alta disponibilidade, que pode ser configurado futuramente englobando auto scalling. 
+- RNF6: Otimização de desempenho e confiabilidade.
+  - No ms consolidation, foi incluido cache com redis com fallback para o banco, gerando otimização de desempenho nas requisições.
+  - Nos ms's foram incluídos testes unitários para aumentar a confiabilidade de código.
+- RNF7: Implementação de testes unitários.
+  - Os dois ms's de transaction e consolidation possuem testes unitários.
+  - Na raiz da solução pode ser executado com o comando: `dotnet test`
+  - Isso rodará os testes e mostrará no terminal o sucesso dos resultados.
+- RNF8: Implementação de monitoramento e observabilidade.
+  - 
+- RNF11: Deve ser feito usando C#
+  - Todos os ms's foram realizados em C#.
 # Temp:
 TODO:
 - Rota PUT está gerando erro 500. Colocar exemplo fixo no swagger
