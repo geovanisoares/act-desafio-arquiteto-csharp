@@ -80,7 +80,7 @@
 - Motivo: Garantir comunicação assíncrona e desacoplamento entre microsserviços.
 
 # Detalhamento dos serviços, estruturas e componentes.
-## MS A
+## MS Auth
 - Code First
 - summaries para melhor documenta��o do c�digo.
 
