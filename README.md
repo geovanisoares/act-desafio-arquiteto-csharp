@@ -45,10 +45,42 @@
 
 ### Microsserviços:
 #### MS Auth (Authentication Service)
-- Função:
-- Detalhamento:
+- Função: Emite e valida tokens JWT.
+- Endpoints:
+  - `POST /Auth/login` - Gera um token JWT.
+  - `POST /Auth/validate` - Valida um token JWT.
 #### MS Transaction (Transaction Service)
+- Função: CRUD das transações financeiras.
+- Endpoints:
+  - `GET /Transaction/{id}` - Busca por ID.
+  - `GET /Transaction` - Busca paginada.
+  - `POST /Transaction` - Criação de transação.
+  - `PUT /Transaction/{id}` - Atualização de transação.
+  - `DELETE /Transaction/{id}` - Exclusão de transação.
+- Mensageria:
+  - TransactionPublisher: Publica mensagens na fila RabbiMQ para comunicação com ms consolidation para invalidação do cache.
 #### MS Consolidation (Consolidation Service)
+- Função: Consolidação diária de dados financeiros.
+- Endpoints:
+    - `GET /Consolidation` - Consulta de consolidação por data.
+- Mensageria:
+  - RabbitMQConsumer: Listener que fica ouvindo a fila alimentada pelo ms transaction, processando mensagens e invalidando cache.
+### Infraestrutura:
+#### Nginx (Load Balancer)
+- Função: Balanceamento de carga entre instâncias dos microsserviços.
+- Motivo: Simplicidade de configuração e suporte a múltiplas instâncias de serviços.
+#### MySQL (Database)
+- Função: Banco de dados relacional para persistência de transações.
+- Motivo: Simplicidade de implementação e suporte a operações transacionais.
+#### Redis (Cache)
+- Função: Armazenamento em memória para cache de consolidações.
+- Motivo: Reduzir a carga no banco de dados e melhorar a velocidade de consulta.
+#### RabbitMQ (Message Broker)
+- Função: Mensageria entre ms transaction e ms consolidation para notificações de mudanças.
+- Motivo: Garantir comunicação assíncrona e desacoplamento entre microsserviços.
+
+# Detalhamento dos serviços, estruturas e componentes.
+## MS A
 - Code First
 - summaries para melhor documenta��o do c�digo.
 
