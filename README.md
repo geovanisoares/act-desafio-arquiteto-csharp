@@ -44,8 +44,8 @@
 - Detalhamento: Frontend com código estático podendo ser acoplado junto ao servidor ou disponibilizado com serviço de CDN como cloudfront da AWS com distribuição geográfica muito performática. Não implementado para este desafio.
 
 ### Microsserviços:
-#### MS Auth (Authentication Service)
-- Função: Emite e valida tokens JWT.
+#### MS Auth (Authentication Service) (Implementado parcialmente)
+- Função: Emite e valida tokens JWT. Implementado parcialmente, o suficiente para promover autenticação para os MS.
 - Endpoints:
   - `POST /Auth/login` - Gera um token JWT.
   - `POST /Auth/validate` - Valida um token JWT.
@@ -79,9 +79,88 @@
 - Função: Mensageria entre ms transaction e ms consolidation para notificações de mudanças.
 - Motivo: Garantir comunicação assíncrona e desacoplamento entre microsserviços.
 
-# Detalhamento dos serviços, estruturas e componentes.
+# Estruturas, componentes e detalhamento dos serviços.
+## Estrutura e componetes dos MS's.
+- Arquitetura modular seguindo os princípios de Clean Architecture
+- Divisão em camadas
+  - Api: Controladores e DTOs (interface pública).
+  - Application: Serviços, interfaces e validações.
+  - Domain: Entidades, enums e interfaces de repositório (lógica de negócios).
+  - Infrastructure: Implementações de repositórios, mensagens e contexto de banco.
+  - Migrations: Estrutura para versionamento do banco de dados.
+  - Tests: Estrutura de testes unitários, cobrindo serviços e repositórios.
+- Princípios SOLID aplicados em toda a aplicação
+  - SRP (Single Responsibility Principle): Cada camada possui um único propósito (API, Serviço, Repositório).
+  - DIP (Dependency Inversion Principle): Serviços dependem de interfaces, não de implementações concretas.
+- Estrutura e componentes
+  - Api:
+    - Controllers:
+      - TransactionController.cs: Exposição dos endpoints GET, POST, PUT, DELETE.
+    - DTOs:
+      - Parameters: Definições de parâmetros de consulta.
+      - Requests: Estrutura dos requests (CreateTransactionRequest, UpdateTransactionRequest).
+      - Responses: Estrutura dos responses (TransactionResponse).
+  - Application:
+    - Services: Implementações dos serviços de transações (TransactionService).
+    - Interfaces: Interfaces de serviços (ITransactionService, IMessageService).
+    - Exceptions: Exceções customizadas (BusinessException, NotFoundException).
+    - Mappers: Mapeamento entre DTOs, entidades e modelos de banco.
+  - Domain:
+    - Entities: Entidades principais (TransactionEntity).
+    - Enums: Enumerações para tipagem (TransactionType).
+    - Interfaces: Interfaces de repositório (ITransactionRepository).
+  - Infrastructure:
+    - Data: Contexto do banco de dados (AppDbContext).
+    - EFModels: Modelos específicos do Entity Framework (TransactionModel).
+    - Repositories: Implementações de repositórios (TransactionRepository).
+    - Messaging: Implementação do serviço de mensageria (RabbitMQPublisher).
+  - Migrations:
+    - Scripts de migração gerados automaticamente com base no modelo TransactionModel.
+  - Tests:
+    - UnitTests: Testes de unidade para serviços (TransactionServiceTests).
+- Fluxo das informações
+  - Requisição HTTP recebida pelo Controller.
+  - Dados mapeados para entidades no Mapper.
+  - Validações e exceções tratadas no Service.
+  - Caso necessário, acessa cache ou passa a consumir banco por fallback.
+  - Operações no banco de dados realizadas pelo Repository.
+  - Caso necessário, mensagem publicada no RabbitMQ para atualização do cache.
+  - Resposta gerada e enviada para o cliente pelo Controller.
+- Validações e exceções
+  - Validações realizadas nos DTOs de requests e classes de domínio. (por conta do tempo do desafio nem todas as validações foram cobertas).
+  - Para exceções deve ser usado classe personalizada que centraliza a captura e devolve exceções com status code correto de acordo com o cenário, as principais devem ser:
+    -  BusinessException (400): Falhas de negócio (ex.: campo obrigatório).
+    -  NotFoundException (404): Transação não encontrada.
+    -  UnauthorizedException (401): Falha na autorização.
+- Mensageria
+  - Formato da mensagem: JSON contendo a data da transação e o ID da transação.
+  - Motivação: Notificar o serviço MS Consolidation para invalidar o cache após operações de transação.
+- Cache
+  - Implementação no service, para algumas rotas de consulta, consultando primeiro no cache e depois no banco por fallback (Por conta do tempo do desafio, apenas consolidation tem implementaçãod e cache.)
+- Banco de dados
+  - Banco relacional configurado com Entity Framework Core.
+  - Estrutura da tabela transactions:
+    - Id (GUID) - Chave primária.
+    - Date (DateTime) - Data da transação.
+    - Value (Decimal) - Valor da transação.
+    - Description (String) - Descrição.
+    - CreatedAt (DateTime) - Data de criação.
+    - UpdatedAt (DateTime) - Data da última atualização.
+- Testes
+  - Centralização dos testes realizados no microsserviço, para este desafio: unitários e performance.
+  - Implementação e cobertura.
+    - Testes unitários com cobertura apenas na camada de serviço.
+    - Para este desafio, apenas consolidation tem teste de performance com K6.
+- Logs e observabilidade
+  - Logs estruturados utilizando ILogger<TransactionService>. (Por questão do tempo do desafio, apenas a camada de serviço contempla logs estruturados).
+  - Estrutura dos logs:
+    - LogInformation() - Operações de sucesso.
+    - LogWarning() - Exceções de validação e transação não encontrada.
+    - LogError() - Erros críticos durante operações.
+- Segurança.
+  - Rotas protegidas
 ## MS Auth
-- Design de código: Em camadas.
+- Endpoints
 
 # Instruções para rodar a aplicação e testes.
 
