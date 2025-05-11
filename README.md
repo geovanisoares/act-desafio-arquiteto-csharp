@@ -10,17 +10,45 @@
 ## Requisitos não funcionais:
 - RNF1: O serviço de consolidado diário recebe 50 requisições por segundo, com no máximo 5% de perda de requisições.
 - RNF2: O serviço de controle de lançamento não deve ficar indisponível se o sistema de consolidado diário cair.
-- RNF3: Ter estratégias de recuperação de falhas.
+- RNF3: Implementar estratégias de recuperação de falhas.
 - RNF4: Implementação de autenticação, autorização e criptografia.
-- RNF5: Ter alta disponibilidade para ambos os serviços.
-- RNF6: Ter documentação completa das decisões arquiteturais.
-- RNF7: Ter otimização de desempenho, disponibilidade e confiabilidade.
+- RNF5: Garantir alta disponibilidade e escalabilidade para ambos os serviços.
+- RNF6: Criar documentação completa das decisões arquiteturais.
+- RNF7: Otimização de desempenho, disponibilidade e confiabilidade.
 - RNF8: Implementação de testes unitários.
-- RNF9: Ter monitoramento e observabilidade.
+- RNF9: Implementação de monitoramento e observabilidade.
 - RNF10: Definição e estruturação dos domínios funcionais.
 - RNF11: Criação de um Readme com instruções para execução local.
+- RNF12: Deve ser feito usando C#
 
+# Analise de domínios.
+- Domínio 1: Lançamentos (transactions)
+  - Registrar lançamentos.
+  - Atualizar lançamentos.
+  - Excluir lançamentos.
+  - Consultar lançamentos.
+- Domínio 2: Consolidação Diária (consolidation)
+  - Processar o saldo diário consolidado.
+ 
+# Diagrama de contexto
+![ACT - Carrefour](https://github.com/user-attachments/assets/bb139388-6770-4afa-8ca8-874708994e29)
 
+## Detalhamento da arquitetura
+- Arquitetura segue um padrão de microsserviços orquestrados em um ambiente de contêineres (Docker) gerenciados por Kubernetes ou Swarm. A estrutura é composta por três microsserviços principais:
+  - MS Auth.
+  - MS Transaction.
+  - MS Consolidation.
+- A comunicação entre os microsserviços é mediada por um Load Balancer NGINX, que gerencia as requisições HTTP. O MySQL atua como banco de dados persistente, enquanto o Redis funciona como cache, com fallback para o banco de dados em caso de falha no cache. Atualmente os dois microsserviços compartilham o mesmo banco de dados, evitando assim inconsistência de dados. Caso necessário, para uma evolução, os bancos podem ser divididos e as informações compartilhadas por mensageria ou ETL, podendo haver inconsistência parcial de dados, porém tornando os microsserviços desacoplados no que diz respeito ao banco de dados.
+### Frontend (Não implementado):
+- Função: Interface de usuário para consumo dos serviços via HTTP.
+- Detalhamento: Frontend com código estático podendo ser acoplado junto ao servidor ou disponibilizado com serviço de CDN como cloudfront da AWS com distribuição geográfica muito performática. Não implementado para este desafio.
+
+### Microsserviços:
+#### MS Auth (Authentication Service)
+- Função:
+- Detalhamento:
+#### MS Transaction (Transaction Service)
+#### MS Consolidation (Consolidation Service)
 - Code First
 - summaries para melhor documenta��o do c�digo.
 
