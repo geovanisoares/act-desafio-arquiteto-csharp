@@ -195,6 +195,8 @@
   - `docker-compose up -d`
 - Passo 3: Aplicação das Migrations
   - No diretorio raiz do projeto act-ms-transaction, execute: `dotnet ef database update`
+- Rotas do swagger para efetuar as requisições:
+  - http://localhost/transaction/swagger/index.html
 ## Executar os testes
 - Unitários:
   - Na raiz da solução, execute: `dotnet test`
