@@ -281,8 +281,8 @@
   - Para este desafio, foi implementado serviço de auth,  que gera token JWT para uso em rotas protegidas.
   - Envidencie acessando rotas protegidas e recebendo unauthorize, após, desbloqueando as rotas com JWT gerado no ms auth.
   - Por conta do tempo, apenas o ms transaction possui rotas protegidas.
-- RNF5: Garantir alta disponibilidade e escalabilidade para ambos os serviços.
-  -O balanceamento de carga com nginx pode ser evidenciado parando um dos containers, por exemplo, um do consolidation, enviando novas requisições, pode alterar dando start no que estava pausado e pausando o que estava funcional refazendo os testes.
+- RNF5: Garantir alta disponibilidade e escalabilidade para ambos os serviços.  
+  - O balanceamento de carga com nginx pode ser evidenciado parando um dos containers, por exemplo, um do consolidation, enviando novas requisições, pode alterar dando start no que estava pausado e pausando o que estava funcional refazendo os testes.
   - Evidencie que o sistema distribui as cargas não impedindo sua funcionalidade, gerando alta disponibilidade, que pode ser configurado futuramente englobando auto scalling. 
 - RNF6: Otimização de desempenho e confiabilidade.
   - No ms consolidation, foi incluido cache com redis com fallback para o banco, gerando otimização de desempenho nas requisições.
@@ -298,7 +298,7 @@
   - Vá até: `http://localhost:9090/`
   - No campo de input insira uma query para métrica, por exemplo, receber o total de http status code 200: `http_requests_received_total{code="200"}`
   - Clique em execute e se tiver ao menos uma requisição com status 200 verá:
-  - ![image](https://github.com/user-attachments/assets/9d5c62ce-2ddc-4989-bbbb-5a141a653e44)
+  - ![image](https://github.com/user-attachments/assets/9d5c62ce-2ddc-4989-bbbb-5a141a653e44)  
   - Pode ser visto em gráfico também, nesse caso teve 3 requisições:
   - ![image](https://github.com/user-attachments/assets/3816bba8-acb9-4ecb-b1c5-5c7112fab23a)  
 - RNF9: Deve ser feito usando C#.
