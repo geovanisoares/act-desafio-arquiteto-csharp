@@ -59,22 +59,6 @@ namespace act_ms_transaction.Application.Mappers
             };
         }
 
-        /// <summary>
-        /// Mapeia Domain para UpdateTransactionRequest.
-        /// </summary>
-        public static UpdateTransactionRequest MapToUpdateRequest(TransactionEntity transaction)
-        {
-            return new UpdateTransactionRequest
-            {
-                Id = transaction.Id,
-                Date = transaction.Date.ToString("yyyy-MM-dd"),
-                Type = ConvertEnumToChar(transaction.Type),
-                Value = transaction.Value,
-                Description = transaction.Description,
-                UpdatedBy = transaction.UpdatedBy
-            };
-        }
-
         public static TransactionEntity MapToEntity(TransactionModel model)
         {
             return new TransactionEntity

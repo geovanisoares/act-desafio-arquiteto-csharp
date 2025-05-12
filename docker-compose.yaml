@@ -75,21 +75,6 @@ services:
       - redis
       - rabbitmq
 
-  migrations:
-    image: mcr.microsoft.com/dotnet/sdk:8.0
-    container_name: migrations
-    working_dir: /src/act-ms-transaction
-    volumes:
-      - ./act-ms-transaction:/src/act-ms-transaction
-    depends_on:
-      - mysql
-    environment:
-      DB_HOST: mysql
-      DB_USER: act-user
-      DB_PASS: actUserP4ss
-      DB_NAME: transaction_db
-    command: sh -c "dotnet tool install --global dotnet-ef && export PATH=\"/root/.dotnet/tools:$PATH\" && /root/.dotnet/tools/dotnet-ef database update"
-
   nginx:
     image: nginx:latest
     container_name: nginx

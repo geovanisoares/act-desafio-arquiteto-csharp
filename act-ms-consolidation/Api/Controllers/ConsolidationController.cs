@@ -14,13 +14,20 @@ namespace act_ms_consolidation.Api.Controllers
         {
             _consolidationService = consolidationService;
         }
+
+        /// <summary>
+        /// Retrieves the daily consolidation data for a specific date
+        /// </summary>
+        /// <param name="date">Date in the format yyyy-MM-dd</param>
+        /// <returns>Daily consolidation data</returns>
         [HttpGet("{date}")]
+        [SwaggerOperation(Summary = "Fetches daily consolidation data by date")]
+        [SwaggerResponse(200, "Daily consolidation data retrieved successfully")]
+        [SwaggerResponse(400, "Invalid date format")]
+        [SwaggerResponse(404, "No data found for the provided date")]
         public async Task<IActionResult> GetDailyConsolidation(string date)
         {
-            if (!DateTime.TryParse(date, out _))
-            {
-                return BadRequest("Invalid date format. Use yyyy-MM-dd.");
-            }
+            
 
             var result = await _consolidationService.GetDailyConsolidationAsync(date);
             return Ok(result);

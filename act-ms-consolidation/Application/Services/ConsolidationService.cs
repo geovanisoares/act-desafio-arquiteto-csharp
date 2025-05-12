@@ -26,6 +26,12 @@ namespace act_ms_consolidation.Application.Services
                 _logger.LogWarning("Date field is required");
                 throw new BusinessException("Date field is required");
             }
+
+            if (!DateTime.TryParse(date, out _))
+            {
+                throw new BusinessException("Invalid date format. Use yyyy-MM-dd.");
+            }
+
             string cacheKey = $"{CachePrefix}{date}";
             
             _logger.LogInformation($"Checking cache for date: {date}");

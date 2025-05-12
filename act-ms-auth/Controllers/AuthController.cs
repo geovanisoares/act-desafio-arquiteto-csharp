@@ -1,9 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Swashbuckle.AspNetCore.Annotations;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace act_ms_auth.Controllers
 {
@@ -13,7 +17,7 @@ namespace act_ms_auth.Controllers
     {
         private readonly IConfiguration _configuration;
 
-        // Usuário e senha fixos
+        // User and password fixed
         private const string FixedUsername = "admin";
         private const string FixedPassword = "123456";
 
@@ -23,11 +27,14 @@ namespace act_ms_auth.Controllers
         }
 
         /// <summary>
-        /// Endpoint para gerar o token JWT
+        /// Endpoint to generate the JWT token
         /// </summary>
-        /// <param name="model">Model com usuário e senha</param>
-        /// <returns>Token JWT</returns>
+        /// <param name="model">Login model</param>
+        /// <returns>JWT token</returns>
         [HttpPost("login")]
+        [SwaggerOperation(Summary = "Performs login and generates a JWT token")]
+        [SwaggerResponse(200, "Token successfully generated")]
+        [SwaggerResponse(401, "Invalid username or password")]
         public IActionResult Login([FromBody] LoginModel model)
         {
             if (model.Username == FixedUsername && model.Password == FixedPassword)
@@ -36,14 +43,18 @@ namespace act_ms_auth.Controllers
                 return Ok(new { token });
             }
 
-            return Unauthorized("Usuário ou senha inválidos.");
+            return Unauthorized("Invalid username or password.");
         }
 
         /// <summary>
-        /// Endpoint para validar o token JWT
+        /// Validates the JWT token
         /// </summary>
-        /// <returns>Mensagem de sucesso ou falha</returns>
+        /// <param name="tokenModel">Model containing the JWT token</param>
+        /// <returns>Validation result</returns>
         [HttpPost("validate")]
+        [SwaggerOperation(Summary = "Validates the JWT token")]
+        [SwaggerResponse(200, "Token is valid")]
+        [SwaggerResponse(401, "Token is invalid")]
         public IActionResult ValidateToken([FromBody] TokenModel tokenModel)
         {
             try
@@ -112,12 +123,24 @@ namespace act_ms_auth.Controllers
 
     public class LoginModel
     {
-        public string Username { get; set; }
-        public string Password { get; set; }
+        [Required]
+        [SwaggerSchema("Username for login")]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
+        [DefaultValue("admin")]
+        public string? Username { get; set; }
+
+        [Required]
+        [SwaggerSchema("Password for login")]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
+        [DefaultValue("123456")]
+        public string? Password { get; set; }
     }
 
     public class TokenModel
     {
-        public string Token { get; set; }
+        [SwaggerSchema("JWT token generated during login")]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
+        [DefaultValue("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")]
+        public string? Token { get; set; }
     }
 }

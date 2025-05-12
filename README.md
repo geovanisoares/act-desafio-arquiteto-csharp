@@ -25,12 +25,13 @@ TODO:
 
 TODO Filtrado:
 - Colocar tratamento dos dados de entrada nos ms.
-- MIddleware de exceptions.
+- MIddleware de exceptions. OK
 - Colocar exemplo no swagger para ms auth. com user admin e pass 123456.
 - Aplicar os logs estruturados (Prioridade.)
 - Migrations, ver forma de fazer no compose.
 - Traçar tópicos de apresentação em vídeo se basear no documento.
 - Verificar todos os arquivos (Anotações desnecessárias, refs desnecessárias.)
+- Mencionar na doc sobre case sensitive das rotas quecomeçam com maiúscula.
 
 Planos futuros
 - Configurar uma deadQueue para mensagens mal formatadas e reprocessamento posterior.
