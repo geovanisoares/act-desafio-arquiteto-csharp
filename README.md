@@ -75,6 +75,9 @@
 #### RabbitMQ (Message Broker)
 - Função: Mensageria entre ms transaction e ms consolidation para notificações de mudanças.
 - Motivo: Garantir comunicação assíncrona e desacoplamento entre microsserviços.
+#### Prometheus (Monitoramento e Coleta de Métricas)
+- Função: Monitorar métricas do sistema, incluindo requisições HTTP, latências e status dos serviços.
+- Motivo: Implementar observabilidade, permitindo a análise em tempo real do comportamento dos microsserviços, identificação de gargalos e possíveis falhas.
 
 # Estruturas, componentes e detalhamento dos serviços.
 ## Estrutura e componetes dos MS's.
