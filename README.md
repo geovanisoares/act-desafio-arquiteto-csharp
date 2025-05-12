@@ -273,6 +273,7 @@
   - No docker, pare os dois containers "act-ms-consolidation-1" e "act-ms-consolidation-2".
   - Realize requisições através dos endpoints do ms transaction.
   - Evidencie que as requisições funcionam normalmente mesmo com os containers de consolidation pausados.
+  - O console do RabbitMQ pode ser acessado evidenciando a fila acumulando mensagens, após, dê start no container novamente e veja a fila sendo processada e descarregando.
 - RNF3: Implementar estratégias de recuperação de falhas.
   - Por conta do tempo do desafio, estratégias de Retry e Circuit Breaker não foram implementados.
 - RNF4: Implementação de autenticação, autorização e criptografia.
@@ -301,15 +302,8 @@
   - ![image](https://github.com/user-attachments/assets/3816bba8-acb9-4ecb-b1c5-5c7112fab23a)  
 - RNF9: Deve ser feito usando C#.
   - Todos os ms's foram realizados em C#.
-# Temp:
-TODO:
-- Rota PUT está gerando erro 500. Colocar exemplo fixo no swagger
-- Rota GET/id e DELETE estão Dando erro 500 acho que quando não acha o ID.
-- Adicionais
-	- Implementar prometheus e grafana gerando gráfico.
-	- Integrar frontend.
-- Fazer code review ponta a ponta.
-
-Planos futuros.
-- Configurar uma deadQueue para mensagens mal formatadas e reprocessamento posterior.
+# Possibilidade de melhorias:
+- Configurar uma DLQ para mensagens mal formatadas e reprocessamento posterior.
 - Caso tenha mais tipos de usuários, implementar autorização.
+- CQRS caso aplicação passe a ter grande volumetria de chamadas, podendo separar operações de leitura e gravação de banco, escalando o mesmo conforme a necessidade, leitura horizontalmente e gravação verticalmente.
+- Testes e2e automatizados com cypress ou selenium, acoplados a pipelines para garantir integridade funcional.
