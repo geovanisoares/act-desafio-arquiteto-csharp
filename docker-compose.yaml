@@ -85,3 +85,11 @@ services:
     depends_on:
       - act-ms-consolidation
       - act-ms-transaction
+  
+  prometheus:
+    image: prom/prometheus:v2.43.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml

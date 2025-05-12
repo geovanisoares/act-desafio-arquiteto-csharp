@@ -1,3 +1,4 @@
+using act_ms_transaction.Application.Exeptions;
 using act_ms_transaction.Application.Interfaces;
 using act_ms_transaction.Application.Services;
 using act_ms_transaction.Domain.Interfaces;
@@ -7,12 +8,15 @@ using act_ms_transaction.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Prometheus;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+
 
 var connectionString = builder.Configuration.GetConnectionString("MySqlConnection"); builder.Configuration.GetConnectionString("PostgresConnection");
 
@@ -29,6 +33,7 @@ builder.Services.AddScoped<ITransactionService, TransactionService>();
 
 builder.Services.Configure<RabbitMQSettings>(builder.Configuration.GetSection("RabbitMQ"));
 builder.Services.AddSingleton<IMessageService, TransactionPublisher>();
+builder.Services.UseHttpClientMetrics();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -65,6 +70,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+app.UseMiddleware<ExceptionHandler>();
 
 //if (app.Environment.IsDevelopment())
 //{
@@ -76,6 +82,14 @@ app.Use(async (context, next) =>
 {
     var authServiceUrl = builder.Configuration["AuthService:Url"];
     var authorizationHeader = context.Request.Headers["Authorization"].ToString();
+
+    var path = context.Request.Path.ToString().ToLower();
+
+    if (path.StartsWith("/metrics") || path.StartsWith("/health"))
+    {
+        await next.Invoke();
+        return;
+    }
 
     if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer "))
     {
@@ -102,7 +116,11 @@ app.Use(async (context, next) =>
     await next.Invoke();
 });
 
+app.UseMetricServer();
+app.UseHttpMetrics();
+
 app.MapGet("/health", () => Results.Ok("Healthy"));
+
 
 app.UseAuthorization();
 

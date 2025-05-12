@@ -3,7 +3,8 @@
     public record GetTransactionResponse
     {
         public Guid Id { get; set; }
-        public string Date { get; set; }  // Mantém o formato string para facilitar a visualização na API
+        public string Date { get; set; }
+        public char Type { get; set; }
         public decimal Value { get; set; }
         public string Description { get; set; }
         public DateTime CreatedAt { get; set; }

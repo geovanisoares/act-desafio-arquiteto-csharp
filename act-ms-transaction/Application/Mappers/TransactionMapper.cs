@@ -65,7 +65,7 @@ namespace act_ms_transaction.Application.Mappers
             {
                 Id = model.Id,
                 Date = DateTime.Parse(model.Date),
-                Type = model.Type == "I" ? Domain.Enums.TransactionType.Income : Domain.Enums.TransactionType.Expense,
+                Type = ConvertCharToTransactionType(model.Type),
                 Value = model.Value,
                 Description = model.Description,
                 CreatedAt = model.CreatedAt,
@@ -96,7 +96,8 @@ namespace act_ms_transaction.Application.Mappers
             return new GetTransactionResponse
             {
                 Id = entity.Id,
-                Date = entity.Date.ToString("yyyy-MM-dd"),  // Mantém o formato padronizado
+                Date = entity.Date.ToString("yyyy-MM-dd"),
+                Type = ConvertEnumToChar(entity.Type),
                 Value = entity.Value,
                 Description = entity.Description,
                 CreatedAt = entity.CreatedAt,
@@ -129,6 +130,19 @@ namespace act_ms_transaction.Application.Mappers
                 'I' => TransactionType.Income,
                 'E' => TransactionType.Expense,
                 _ => throw new ArgumentException($"Tipo de transação inválido: {type}")
+            };
+        }
+
+        private static TransactionType ConvertCharToTransactionType(string? type)
+        {
+            if (string.IsNullOrEmpty(type))
+                throw new ArgumentException("Type cannot be null or empty");
+
+            return type[0] switch
+            {
+                'I' => TransactionType.Income,
+                'E' => TransactionType.Expense,
+                _ => throw new ArgumentException($"Invalid type: {type}")
             };
         }
     }

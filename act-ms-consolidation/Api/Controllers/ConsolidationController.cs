@@ -1,6 +1,7 @@
 ﻿using act_ms_consolidation.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace act_ms_consolidation.Api.Controllers
 {
@@ -25,10 +26,8 @@ namespace act_ms_consolidation.Api.Controllers
         [SwaggerResponse(200, "Daily consolidation data retrieved successfully")]
         [SwaggerResponse(400, "Invalid date format")]
         [SwaggerResponse(404, "No data found for the provided date")]
-        public async Task<IActionResult> GetDailyConsolidation(string date)
+        public async Task<IActionResult> GetDailyConsolidation([RegularExpression(@"^\d{4}-\d{2}-\d{2}$", ErrorMessage = "Date must be in the format yyyy-MM-dd")] string date)
         {
-            
-
             var result = await _consolidationService.GetDailyConsolidationAsync(date);
             return Ok(result);
         }

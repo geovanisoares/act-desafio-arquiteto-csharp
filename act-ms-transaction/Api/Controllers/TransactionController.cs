@@ -1,8 +1,10 @@
 ﻿using act_ms_transaction.Api.DTOs.Parameters;
 using act_ms_transaction.Api.DTOs.Requests;
+using act_ms_transaction.Api.DTOs.Responses;
 using act_ms_transaction.Application.Interfaces;
 using act_ms_transaction.Application.Mappers;
 using act_ms_transaction.Domain.Entities;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
@@ -25,27 +27,33 @@ namespace act_ms_transaction.Api.Controllers
         [HttpPost]
         [SwaggerOperation(Summary = "Create a new transaction")]
         [SwaggerResponse(200, "Transaction created successfully")]
-        public async Task<ActionResult<TransactionEntity>> Create(CreateTransactionRequest transactionRequest)
+        public async Task<ActionResult<GetTransactionResponse>> Create([FromBody] CreateTransactionRequest transactionRequest)
         {
             var transactionEntity = TransactionMapper.MapToDomain(transactionRequest);
             var createdTransaction = await _transactionService.CreateAsync(transactionEntity);
-            return CreatedAtAction(nameof(GetById), new { id = createdTransaction.Id }, createdTransaction);
+            var transactionResponse = TransactionMapper.MapToResponse(createdTransaction);
+            return Ok(transactionResponse);
         }
 
         [HttpPut("{id:guid}")]
         [SwaggerOperation(Summary = "Update a transaction by ID")]
-        public async Task<IActionResult> Update(Guid id, UpdateTransactionRequest transactionRequest)
+        [SwaggerResponse(200, "Transaction updated successfully")]
+        [SwaggerResponse(404, "Transaction not found")]
+        public async Task<ActionResult<GetTransactionResponse>> Update(Guid id, UpdateTransactionRequest transactionRequest)
         {
             var transactionEntity = TransactionMapper.MapToDomain(transactionRequest);
             
             var updatedTransaction = await _transactionService.UpdateAsync(transactionEntity, id);
 
-            return Ok(updatedTransaction);
+            var transactionResponse = TransactionMapper.MapToResponse(updatedTransaction);
+
+            return Ok(transactionResponse);
         }
 
         [HttpGet]
         [SwaggerOperation(Summary = "Get all transactions with pagination")]
-        public async Task<ActionResult<IEnumerable<TransactionEntity>>> Get([FromQuery] PaginationQueryParameters query)
+        [SwaggerResponse(200, "Transactions fetched successfully")]
+        public async Task<ActionResult<IEnumerable<GetTransactionResponse>>> Get([FromQuery] PaginationQueryParameters query)
         {
             var result = await _transactionService.GetAllAsync(query.PageNumber, query.PageSize, query.OrderBy, query.Asc);
             return Ok(result);
@@ -53,13 +61,15 @@ namespace act_ms_transaction.Api.Controllers
 
         [HttpGet("{id:guid}")]
         [SwaggerOperation(Summary = "Get a transaction by ID")]
-        public async Task<ActionResult<TransactionEntity>> GetById(Guid id)
+        [SwaggerResponse(200, "Transaction fetched successfully")]
+        [SwaggerResponse(404, "Transaction not found")]
+        public async Task<ActionResult<GetTransactionResponse>> GetById(Guid id)
         {
             var transaction = await _transactionService.GetByIdAsync(id);
-            if (transaction == null)
-                return NotFound($"Transaction with ID {id} not found.");
 
-            return Ok(transaction);
+            var transactionResponse = TransactionMapper.MapToResponse(transaction);
+
+            return Ok(transactionResponse);
         }
 
         [HttpDelete("{id:guid}")]
@@ -69,9 +79,6 @@ namespace act_ms_transaction.Api.Controllers
         public async Task<IActionResult> Delete(Guid id)
         {
             var isDeleted = await _transactionService.DeleteAsync(id);
-
-            if (!isDeleted)
-                return NotFound($"Transaction with ID {id} not found.");
 
             return NoContent();
         }

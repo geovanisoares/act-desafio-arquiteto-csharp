@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Itens de Solução", "Itens de Solução", "{20685682-DF54-47F2-908D-A033A99B9E5A}"
 	ProjectSection(SolutionItems) = preProject
 		docker-compose.yaml = docker-compose.yaml
+		prometheus.yml = prometheus.yml
 		README.md = README.md
 	EndProjectSection
 EndProject
