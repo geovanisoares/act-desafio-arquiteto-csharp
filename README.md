@@ -284,9 +284,10 @@
   - Os dois ms's de transaction e consolidation possuem testes unitários.
   - Na raiz da solução pode ser executado com o comando: `dotnet test`
   - Isso rodará os testes e mostrará no terminal o sucesso dos resultados.
+  - ![image](https://github.com/user-attachments/assets/df373547-5289-4c34-86e1-987fc3c2d1f9)
 - RNF8: Implementação de monitoramento e observabilidade.
   - 
-- RNF9: Deve ser feito usando C#
+- RNF9: Deve ser feito usando C#.
   - Todos os ms's foram realizados em C#.
 # Temp:
 TODO:
