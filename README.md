@@ -171,7 +171,6 @@
     - 5672 (RabbitMQ)
     - 15672 (RabbitMQ Management)
     - 9000 (Prometheus)
-    - 3000 (Grafana)
 - .NET SDK 8.0 instalado. 
 - EF CLI (Entity Framework Core CLI): Instalar globalmente: `dotnet tool install --global dotnet-ef` (Para rodar migrations e testes unitários)
 - K6 para testes de performance (Atualmente apenas em consolidation)
