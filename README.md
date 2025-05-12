@@ -13,13 +13,10 @@
 - RNF3: Implementar estratégias de recuperação de falhas.
 - RNF4: Implementação de autenticação, autorização e criptografia.
 - RNF5: Garantir alta disponibilidade e escalabilidade para ambos os serviços.
-- RNF6: Criar documentação completa das decisões arquiteturais.
-- RNF7: Otimização de desempenho, disponibilidade e confiabilidade.
-- RNF8: Implementação de testes unitários.
-- RNF9: Implementação de monitoramento e observabilidade.
-- RNF10: Definição e estruturação dos domínios funcionais.
-- RNF11: Criação de um Readme com instruções para execução local.
-- RNF12: Deve ser feito usando C#
+- RNF6: Otimização de desempenho, disponibilidade e confiabilidade.
+- RNF7: Implementação de testes unitários.
+- RNF8: Implementação de monitoramento e observabilidade.
+- RNF9: Deve ser feito usando C#
 
 # Analise de domínios.
 - Domínio 1: Lançamentos (transactions)
@@ -219,7 +216,7 @@
   - De posse do token, inclua o mesmo no campo de input com o prefixo "Bearer ", exemplo: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJzdWIiOiJhZG1pbiIsImp0aSI6IjQ0ZDQ3NTRjLTE2N2ItNDAzOC05NzM3LTFmMzE1OTY0ZjE2YSIsImV4cCI6MTc0NzAwNTY1NSwiaXNzIjoiQXV0aFNlcnZpY2UiLCJhdWQiOiJBdXRoU2VydmljZUNsaWVudCJ9.E4FuYjFG7Te9kyUVWNU0sMT1_3wMnk2olfkAkPrusPU`
   - Clique em "Authorize" e depois em "Close".
   - Agora pode fazer uso das rotas bloqueadas normalmente.
-## RF:
+## Requisitos Funcionais:
 - RF1: Registrar lançamentos (créditos e débitos) no fluxo de caixa.
   - Acessar swagger: `http://localhost/transaction/swagger/index.html`
   - Acesse a rota POST /Transaction > Try it out
@@ -258,7 +255,7 @@
   - Realize uma operação de transação, por exemplo, uma inclusão de nova transação no ms de transaction com uma data específica.
   - Realize uma busca de consolidado no ms de consolidation com a mesa data das inclusões.
   - Evidencie a mudança nos valores conforme a inclusão de novas transações.
-## RNF:
+## Requisitos Não Funcionais:
 - RNF1: O serviço de consolidado diário recebe 50 requisições por segundo, com no máximo 5% de perda de requisições.
   - Com K6 instalado na máquina.
   - Acesse a pasta de tests/performanceTests do ms de consolidation.
@@ -289,7 +286,7 @@
   - Isso rodará os testes e mostrará no terminal o sucesso dos resultados.
 - RNF8: Implementação de monitoramento e observabilidade.
   - 
-- RNF11: Deve ser feito usando C#
+- RNF9: Deve ser feito usando C#
   - Todos os ms's foram realizados em C#.
 # Temp:
 TODO:
