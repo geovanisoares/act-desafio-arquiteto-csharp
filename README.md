@@ -75,6 +75,9 @@
 #### RabbitMQ (Message Broker)
 - Função: Mensageria entre ms transaction e ms consolidation para notificações de mudanças.
 - Motivo: Garantir comunicação assíncrona e desacoplamento entre microsserviços.
+#### Prometheus (Monitoramento e Coleta de Métricas)
+- Função: Monitorar métricas do sistema, incluindo requisições HTTP, latências e status dos serviços.
+- Motivo: Implementar observabilidade, permitindo a análise em tempo real do comportamento dos microsserviços, identificação de gargalos e possíveis falhas.
 
 # Estruturas, componentes e detalhamento dos serviços.
 ## Estrutura e componetes dos MS's.
@@ -167,6 +170,8 @@
     - 6379 (Redis)
     - 5672 (RabbitMQ)
     - 15672 (RabbitMQ Management)
+    - 9000 (Prometheus)
+    - 3000 (Grafana)
 - .NET SDK 8.0 instalado. 
 - EF CLI (Entity Framework Core CLI): Instalar globalmente: `dotnet tool install --global dotnet-ef` (Para rodar migrations e testes unitários)
 - K6 para testes de performance (Atualmente apenas em consolidation)
@@ -284,9 +289,17 @@
   - Os dois ms's de transaction e consolidation possuem testes unitários.
   - Na raiz da solução pode ser executado com o comando: `dotnet test`
   - Isso rodará os testes e mostrará no terminal o sucesso dos resultados.
+  - ![image](https://github.com/user-attachments/assets/df373547-5289-4c34-86e1-987fc3c2d1f9)  
 - RNF8: Implementação de monitoramento e observabilidade.
-  - 
-- RNF9: Deve ser feito usando C#
+  - Foi implementado prometheus para scrapping de dados no ms transaction. Futuramente pode ser implementado grafana para gerar os gráficos dos dados do prometheus.
+  - Pode ser evidenciado realizando algumas interações nas rotas de transactions e acessar o console do prometheus realizando uma query dos dados.
+  - Vá até: `http://localhost:9090/`
+  - No campo de input insira uma query para métrica, por exemplo, receber o total de http status code 200: `http_requests_received_total{code="200"}`
+  - Clique em execute e se tiver ao menos uma requisição com status 200 verá:
+  - ![image](https://github.com/user-attachments/assets/9d5c62ce-2ddc-4989-bbbb-5a141a653e44)
+  - Pode ser visto em gráfico também, nesse caso teve 3 requisições:
+  - ![image](https://github.com/user-attachments/assets/3816bba8-acb9-4ecb-b1c5-5c7112fab23a)  
+- RNF9: Deve ser feito usando C#.
   - Todos os ms's foram realizados em C#.
 # Temp:
 TODO:
